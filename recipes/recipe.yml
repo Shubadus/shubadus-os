@@ -10,40 +10,180 @@ image-version: 40 # latest is also supported if you want new updates ASAP
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
-  - type: files
-    files:
-      - usr: /usr # copies config/files/usr into your image's /usr.
-                  # put configuration files you want in /etc/ on a booted system 
-                  # in /usr/etc/ in the image. read more in files module reference.
+  - type: akmods
+    install:
+      - openrgb
+      - xone
+
+  - type: chezmoi
+    install_chezmoi: true
+    repository: "git@github.com:Shubadus/dotfiles.git"
+    wait_after_boot: 20m
+    changed-file-policy: replace
+
+  # - type: files
+  #   files:
+  #     - usr: /usr # copies config/files/usr into your image's /usr.
+  #                 # put configuration files you want in /etc/ on a booted system 
+  #                 # in /usr/etc/ in the image. read more in files module reference.
 
   - type: rpm-ostree
     repos:
-      # - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-%OS_VERSION%/solopasha-hyprland-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/mjakeman/system76-scheduler/repo/fedora-%OS_VERSION%/mjakeman-system76-scheduler-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/kylegospo/distrobox-utils/repo/fedora-%OS_VERSION%/kylegospo-distrobox-utils-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/asan/desktop-themes/repo/fedora-%OS_VERSION%/asan-desktop-themes-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/tofik/nwg-shell/repo/fedora-%OS_VERSION%/tofik-nwg-shell-fedora-%OS_VERSION%.repo
+
     install:
-      # - micro
-      # - starship
+      # Terminal
+      - ansible
+      - btop
+      - cargo
+      - cmake
+      - distrobox
+      - freerdp
+      - gcc
+      - git
+      - go
+      - ImageMagick
+      - lshw
+      - jq
+      - make
+      - meson
+      - neovim
+      - nodejs
+      - nodejs-npm
+      - python3-pip
+      - python3-poetry
+      - ranger
+      - ripgrep
+      - rust
+      - starship
+      - unrar
+      - unzip
+      - xdg-desktop-portal
+      - xdg-desktop-portal-gtk
+      - xdg-user-dirs
+      - zip
+
+      # Audio
+      - pavucontrol
+      - pipewire
+      - pipewire-alsa
+      - pipewire-pulseaudio
+      - wireplumber
+
+      # File Manager
+      - gvfs-gphoto2
+      - gvfs-mtp
+      - gvfs-smb
+      - thunar
+      - thunar-archive-plugin
+      - thunar-media-tags-plugin
+      - thunar-vcs-plugin
+      - thunar-volman
+
+      # Networking
+      - NetworkManager
+      - NetworkManager-bluetooth
+      - NetworkManager-openconnect
+      - NetworkManager-wifi
+      - network-manager-applet
+      - nm-connection-editor
+
+      # Power and Thermal Management
+      - system76-scheduler
+      - thermald
+
+      # Printing
+      - cups
+      - system-config-printer
+
+      # Theming
+      - breeze-cursor-theme
+      - breeze-icon-theme
+      - materia-gtk-theme
+      # - materia-kde-theme
+      - tela-icon-theme
+
+      # Virtualization
+      - guestfs-tools
+      - libvirt-daemon-config-network
+      - libvirt-daemon-kvm
+      - python3-libguestfs
+      - qemu-kvm
+      - virt-install
+      - virt-manager
+      - virt-top
+      - virt-viewer
+
+      # Window Managers and wlroot apps
+      ## Agnostic apps
+      - aylurs-gtk-shell
+      - imv
+      - grim
+      - hypridle
+      - hyprlock
+      - light
+      - mpv
+      - nwg-displays
+      - nwg-look
+      - polkit-gnome
+      - qt5-qtstyleplugins
+      - remmina
+      - slurp
+      - swaylock-effects
+      - swww
+      - wl-clipboard
+      
+      ## Hyprland specific
+      - hyprland
+      - pyprland
+
+      ## Qtile specific
+      - python3-pywlroots
+      - qtile
+      - wlroots0.16
     remove:
-      # example: removing firefox (in favor of the flatpak)
-      # "firefox" is the main package, "firefox-langpacks" is a dependency
-      # - firefox
-      # - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+      - firefox
+      - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+      - power-profiles-daemon
 
   - type: default-flatpaks
     notify: true # Send notification after install/uninstall is finished (true/false)
     system:
       # If no repo information is specified, Flathub will be used by default
-      # repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
-      # repo-name: flathub
-      # repo-title: "Flathub (system-wide)" # Optional; this sets the remote's user-facing name in graphical frontends like GNOME Software
+      repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      repo-name: flathub
+      repo-title: "Flathub (system-wide)" # Optional; this sets the remote's user-facing name in graphical frontends like GNOME Software
       install:
-        # - org.mozilla.firefox
-        # - org.gnome.Loupe
-        # - one.ablaze.floorp//lightning # This is an example of flatpak which has multiple branches in selection (flatpak//branch).
-      # Flatpak runtimes are not supported (like org.winehq.Wine//stable-23.08),
-      # only normal flatpak applications are (like Floorp Lightning web browser in this example).
-      # Installing different branches of the same Flatpak is not supported.
-      remove:
-      # - org.gnome.eog
+        - com.bitwarden.Desktop
+        - com.brave.Browser
+        - com.github.tchx84.Flatseal
+        - com.valvesoftware.Steam
+        - io.podman_desktop.PodmanDesktop
+        - org.gnome.font-viewer
+        - org.gtk.Gtk3theme.Materia
+        - org.gtk.Gtk3theme.Materia-dark
+        - org.gtk.Gtk3theme.Materia-dark-compact
+        - org.kde.ark
+        - org.kde.filelight
+        - org.libreoffice.LibreOffice
+        - org.qutebrowser.qutebrowser
+        - org.qbittorrent.Qbittorrent
 
   - type: signing # this sets up the proper policy & signing files for signed images to work fully
 
+  - type: systemd
+    system:
+      enabled:
+        - com.system76.Scheduler.service
+        - thermald.service
+
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - Noto
