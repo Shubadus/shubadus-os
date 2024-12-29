@@ -5,11 +5,16 @@ description: This is my personal OS image.
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 40 # latest is also supported if you want new updates ASAP
+image-version: latest # latest is also supported if you want new updates ASAP
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
+  - type: files
+    files:
+      - source: system
+        destination: /
+
   - type: akmods
     install:
       - openrgb
@@ -21,17 +26,11 @@ modules:
     wait_after_boot: 20m
     changed-file-policy: replace
 
-  # - type: files
-  #   files:
-  #     - usr: /usr # copies config/files/usr into your image's /usr.
-  #                 # put configuration files you want in /etc/ on a booted system 
-  #                 # in /usr/etc/ in the image. read more in files module reference.
-
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
       - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-%OS_VERSION%/solopasha-hyprland-fedora-%OS_VERSION%.repo
-      - https://copr.fedorainfracloud.org/coprs/mjakeman/system76-scheduler/repo/fedora-%OS_VERSION%/mjakeman-system76-scheduler-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/szydell/system76/repo/fedora-%OS_VERSION%/szydell-system76-fedora-%OS_VERSION%.repo
       - https://copr.fedorainfracloud.org/coprs/kylegospo/distrobox-utils/repo/fedora-%OS_VERSION%/kylegospo-distrobox-utils-fedora-%OS_VERSION%.repo
       - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-%OS_VERSION%/atim-starship-fedora-%OS_VERSION%.repo
       - https://copr.fedorainfracloud.org/coprs/asan/desktop-themes/repo/fedora-%OS_VERSION%/asan-desktop-themes-fedora-%OS_VERSION%.repo
@@ -39,12 +38,12 @@ modules:
 
     install:
       # Terminal
-      - ansible
+      # - ansible
       - btop
       - cargo
       - cmake
       - distrobox
-      - freerdp
+      # - freerdp
       - gcc
       - git
       - go
@@ -62,6 +61,7 @@ modules:
       - ripgrep
       - rust
       - starship
+      - tmux
       - unrar
       - unzip
       - xdg-desktop-portal
@@ -95,8 +95,16 @@ modules:
       - nm-connection-editor
 
       # Power and Thermal Management
-      - system76-scheduler
       - thermald
+
+      # System76 Packages
+      - firmware-manager
+      - system76-acpi-dkms
+      - system76-dkms
+      - system76-driver
+      - system76-firmware
+      - system76-io-dkms
+      - system76-power
 
       # Printing
       - cups
@@ -133,9 +141,8 @@ modules:
       - nwg-look
       - polkit-gnome
       - qt5-qtstyleplugins
-      - remmina
+      # - remmina
       - slurp
-      - swaylock-effects
       - swww
       - wl-clipboard
       
@@ -143,10 +150,6 @@ modules:
       - hyprland
       - pyprland
 
-      ## Qtile specific
-      - python3-pywlroots
-      - qtile
-      - wlroots0.16
     remove:
       - firefox
       - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
@@ -162,6 +165,7 @@ modules:
       install:
         - com.bitwarden.Desktop
         - com.brave.Browser
+        - com.discordapp.Discord
         - com.github.tchx84.Flatseal
         - com.valvesoftware.Steam
         - io.podman_desktop.PodmanDesktop
@@ -174,13 +178,21 @@ modules:
         - org.libreoffice.LibreOffice
         - org.qutebrowser.qutebrowser
         - org.qbittorrent.Qbittorrent
+        - org.prismlauncher.PrismLauncher
+        - org.remmina.Remmina
+        - md.obsidian.Obsidian
+        - net.davidotek.pupgui2
+        - net.lutris.Lutris
+        - net.runelight.RuneLite
+        - sh.ppy.osu 
 
   - type: signing # this sets up the proper policy & signing files for signed images to work fully
 
   - type: systemd
     system:
       enabled:
-        - com.system76.Scheduler.service
+        - com.system76.PowerDaemon.service
+        - com.system76-firmware-daemon.service
         - thermald.service
 
   - type: fonts
